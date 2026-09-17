@@ -32,8 +32,6 @@ def index(request):
 
         filtered_releases = filtered_releases.filter(descriptor_filter)
 
-    print(filtered_releases)
-
     pq_ranking = priority_queue (
         list(filtered_releases),
         cmp=lambda parent, child : ranking_weight(parent) > ranking_weight(child)
