@@ -9,7 +9,6 @@ from django.db.models import Count, Q
 def index(request):
     seven_days_ago = date.today() - timedelta(7)
 
-    print(seven_days_ago)
     whats_hot = Release.objects.annotate(
         weekly_rating_count=Count('rating', filter=Q(rating__date__gt=seven_days_ago))
     ).filter(weekly_rating_count__gt=0).order_by('-weekly_rating_count')[:3]
