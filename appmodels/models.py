@@ -6,7 +6,7 @@ class User(models.Model):
     def profile_picture_path(user, filename):
         return "users/{}.jpg".format(user.username)
 
-    username = models.CharField(max_length=20)
+    username = models.CharField(max_length=20, unique=True)
     location = models.CharField(max_length=20)
     join_date = models.DateField(default=date.today)
     profile_picture = models.ImageField(upload_to=profile_picture_path, default="placeholder.jpg")
@@ -23,7 +23,7 @@ class Creator(models.Model):
 
 class Release(models.Model):
     def release_art_path(release, filename):
-        return "releases/{}.jpg".format(self.__str__())
+        return "releases/{}.jpg".format(release.__str__())
 
     class Medium(models.IntegerChoices):
         ALBUM = 0
@@ -53,6 +53,22 @@ class Rating(models.Model):
 
     def __str__(self):
         return "{}: {}".format(self.user, self.release)
+
+class Review(models.Model):
+    rating = models.OneToOneField(
+        Rating,
+        on_delete=models.CASCADE,
+        primary_key=True
+    )
+
+    text = models.TextField()
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    release = models.ForeignKey(Release, on_delete=models.CASCADE)
+    text = models.TextField()
+
+    date = models.DateTimeField(auto_now=True)
 
 class DescriptorVote(models.Model):
     class Descriptor(models.IntegerChoices):
@@ -95,46 +111,11 @@ class Connection(models.Model):
     def __str__(self):
         return "{} following {}".format(follower, followee)
 
-"""
-class Artist(models.Model):
-    artist_name = models.CharField()
+from django.db.models import Avg
+from math import sqrt, log10
 
-class Album(models.Model):
-    title = models.CharField()
-    release_date = models.DateField()
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
-    producer = models.CharField()
-    duration = models.DurationField()
-    language = models.CharField()
+def get_ranking_weight(r):
+    release_ratings = Rating.objects.filter(release__id = r.id)
+    avg_rating = release_ratings.aggregate(Avg('score', default=0))['score__avg']
 
-class AlbumRating(models.Model):
-    album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField()
-
-
-
-# film
-class Director(models.Model):
-    name = models.CharField()
-
-class Film(models.Model):
-    title = models.CharField()
-    release_date = models.DateField()
-    director = models.ForeignKey(Director, on_delete=models.CASCADE)
-    producer = models.CharField()
-    duration = models.DurationField()
-    language = models.CharField()
-
-# books
-class Author(models.Model):
-    name = models.CharField()
-
-class Book(models.Model):
-    title = models.CharField()
-    release_date = models.DateField()
-    author = models.ForeignKey(Director, on_delete=models.CASCADE)
-    publisher = models.CharField()
-    page_count = models.IntegerField()
-    language = models.CharField()
-"""
+    return avg_rating * sqrt(log10(release_ratings.count() + 1))

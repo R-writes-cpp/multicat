@@ -34,7 +34,7 @@ def get_descriptor_profile(user_id):
 
         for d in range(18):
             current_avg = descriptor_avgs[d]
-            if current_avg != 0:
+            if current_avg != 0: # 0 is used as an out-of-bounds value. all descriptors avgs are from 1 to 4 so this is equivalent to "if there is a valid descriptor avg..."
                 weighted_sums[d] += std_devs_from_mean * (current_avg - 2.5) / 2 # latter part of the product quantifies how far above average the current descriptor is. we scale the result down by 2 so that we can achieve a higher resolution (remember that the value is clamped to the range [1, 4] in the end)
                 freqs[d] += 1
 
@@ -49,7 +49,9 @@ def get_mean_difference(user_descriptor_profile, descriptor_avgs):
             diff_sum += (descriptor_avgs[d] - user_descriptor_profile[d]) ** 2
             count += 1
 
-    return (diff_sum / count) * (18 / count) ** 0.3 if count != 0 else 2.25 # square of half the maximum possible difference
+    return (diff_sum / count) * (18 / count) ** 0.3 if count != 0 else 2.25
+        # (18 / count) ** 0.3 is a weighing function; we want it to be high when our sample size is small but low when our sample size is large.
+        # 2.25 is the square of half the maximum possible difference
 
 def get_recommendation_score(profile, release):
     avgs = get_descriptor_avgs(release.id)

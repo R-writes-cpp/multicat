@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from appmodels.models import User, Creator, Release, Rating, Connection, DescriptorVote
+from appmodels.models import User, Creator, Release, Rating, Review, Comment, Connection, DescriptorVote
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,6 +25,21 @@ class RatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
+        fields = '__all__'
+
+class ReviewSerializer(serializers.ModelSerializer):
+    rating = RatingSerializer()
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+class CommentSerializer(serializers.ModelSerializer):
+    release = ReleaseSerializer()
+    user = UserSerializer()
+
+    class Meta:
+        model = Comment
         fields = '__all__'
 
 class DescriptorVoteSerializer(serializers.ModelSerializer):

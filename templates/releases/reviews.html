@@ -1,0 +1,27 @@
+{% load django_vite %}
+
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title>Release reviews</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    {% vite_hmr_client %}
+    {% vite_react_refresh %}
+
+    {{ release | json_script:"release-data" }}
+    {{ logged_in | json_script:"logged-in" }}
+    {{ avg | json_script:"avg" }}
+    {{ rating_count | json_script:"rating-count" }}
+    {{ last_reviews | json_script:"last-reviews-data" }}
+
+    {% vite_asset 'src/releases/reviews/index.jsx' %}
+    {% vite_asset 'src/main.css.js' %}
+  </head>
+  <body>
+      <div id="root"></div>
+  </body>
+</html>

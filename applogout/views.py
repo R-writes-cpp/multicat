@@ -5,9 +5,7 @@ from appmodels.models import User
 
 def index(request):
     if 'user_id' in request.session:
-        return render (request, 'logout/index.html', {
-            'logged_in': True
-        })
+        return render (request, 'logout/index.html')
     else:
         return HttpResponseRedirect('/')
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PostButton } from './post.jsx';
 import Cookies from 'js-cookie';
 
 export function StarStylesheet() {
@@ -44,48 +45,6 @@ function ScoreStar({ currentScore, setState, star }) {
     </span>
 }
 
-function ScoreSubmit ({ score, path='' }) {
-    const submission = Object.freeze({
-        Unsubmitted: 0,
-        Successful: 1,
-        Error: 2
-    });
-
-    const [submissionState, setSubmissionState] = useState(submission.Unsubmitted);
-    const hasScore = (Array.isArray(score) && score.some(s => s != 0)) || (!Array.isArray(score) && score != 0);
-
-    const onSubmit = () => {
-        if (submissionState == submission.Unsubmitted) {
-            if (hasScore)
-                fetch(window.location.pathname + path, { // ensures that primary key is included in fetched URL by using pathname
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': Cookies.get('csrftoken')
-                    },
-                    body: JSON.stringify(score)
-                }).then(response => {
-                    setSubmissionState(response.ok ? submission.Successful : submission.Error);
-                    setTimeout(() => {setSubmissionState(submission.Unsubmitted);}, 1500);
-                });
-            else {
-                setSubmissionState(submission.Error);
-                setTimeout(() => {setSubmissionState(submission.Unsubmitted);}, 1500);
-            }
-        }
-    };
-
-    switch(submissionState) {
-        case submission.Unsubmitted:
-            return <div className='button' onClick={onSubmit}>Submit</div>;
-
-        case submission.Successful:
-            return <div className='button successful' onClick={onSubmit}>Done!</div>;
-
-        case submission.Error:
-            return <div className='button error' onClick={onSubmit}>Error!</div>;
-    }
-}
-
 export function RatingField({ currentRating }) {
     const [rating, setRating] = useState(currentRating);
     const starRatings = [2, 4, 6, 8, 10]
@@ -95,7 +54,7 @@ export function RatingField({ currentRating }) {
             <ScoreStar currentScore={rating} setState={setRating} star={i}/>
         )}
 
-        <ScoreSubmit score={rating} path={'/rate'}/>
+        <PostButton data={rating} path={'/rate'}/>
     </>;
 }
 
@@ -142,6 +101,6 @@ export function VotingFieldGroup({ currentScores }) {
 
     return <>
         {scores.map((score, idx) => <VotingField currentScore={score} descriptorIdx={idx} setScore={(idx, score) => setScore(idx, score)}/>)}
-        <ScoreSubmit score={scores}/>
+        <PostButton data={scores}/>
     </>;
 }

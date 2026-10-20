@@ -16,11 +16,16 @@ export default function App() {
         <div className='wrapper'>
             <ExtraReleaseInfo release={releaseData} avg={avg} ratingCount={ratingCount} style={{fontSize: '2em'}}/>
 
-            {loggedIn ? <><RatingField currentRating={userRating}/> <a className='button' href={window.location.pathname + '/vote'}>Vote</a></>: <></>}
+            {loggedIn ? <><RatingField currentRating={userRating}/> <br/> <a className='button' href={window.location.pathname + '/vote'}>Vote</a></>: <></>}
         </div>
 
-        <br></br>
+        <br/>
 
         {lastRatingsData.map(r => <RatingInfo rating={r}/>)}
+
+        <br/>
+
+        <div><a className="button" style={{fontSize: '1.5em'}} href={window.location.pathname + '/reviews'}>Reviews</a></div> <br/>
+        <div><a className="button" style={{fontSize: '1.5em'}} href={window.location.pathname + '/comments'}>Comments</a></div>
     </HeaderMain>;
 }

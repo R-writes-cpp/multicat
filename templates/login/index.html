@@ -12,7 +12,7 @@
     {% vite_hmr_client %}
     {% vite_react_refresh %}
 
-    {{ logged_in | json_script:"logged-in" }}
+    {{ False | json_script:"logged-in" }}
 
     {% vite_asset 'src/login/index.jsx' %}
     {% vite_asset 'src/main.css.js' %}

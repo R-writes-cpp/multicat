@@ -1,4 +1,5 @@
 import { get_src_url } from './utils.js'
+import { PostButton } from './post.jsx'
 
 function Info({ page_path, img_path, children }) {
     return <div className="info">
@@ -6,6 +7,13 @@ function Info({ page_path, img_path, children }) {
         <div style={{flexDirection: 'column'}}>
             {children}
         </div>
+    </div>;
+}
+
+function VerticalInfo({ page_path, img_path, children }) {
+    return <div className="info" style={{flexDirection: 'column', flexBasis: '15vw', textAlign: 'center'}}>
+        <div><a href={page_path}><img src={get_src_url(`/static${img_path}`)}></img></a></div>
+        {children}
     </div>;
 }
 
@@ -17,7 +25,7 @@ export function UserInfo({ user }) {
             <div>Location: {user.location}</div>
         </Info>
 
-        <div className="button" onclick="follow" style={{fontSize: '1.5em'}}>Follow</div>
+        <PostButton defaultText='Follow'/>
     </div>;
 }
 
@@ -28,6 +36,15 @@ export function ReleaseInfo({ release, children }) {
         <div>{release.release_date.slice(0, release.release_date.indexOf('-'))}</div>
         {children}
     </Info>;
+}
+
+export function VerticalReleaseInfo({ release, children }) {
+    return <VerticalInfo page_path={`/releases/${release.id}`} img_path={release.art}>
+        <div><b>{release.title}</b></div>
+        <div>{release.creator_primary.name}</div>
+        <div>{release.release_date.slice(0, release.release_date.indexOf('-'))}</div>
+        {children}
+    </VerticalInfo>;
 }
 
 export function ExtraReleaseInfo({ release, avg, ratingCount }) {
@@ -80,8 +97,7 @@ export function ReleaseRatingInfo({ rating }) {
 }
 
 export function RatingInfo({ rating }) {
-    return <div className="info">
-        <a href={`/users/${rating.user.id}`}><img src={get_src_url(`/static${rating.user.profile_picture}`)}></img></a>
+    return <Info page_path={`/users/${rating.user.id}`} img_path={rating.user.profile_picture}>
         <span>{rating.user.username}: <b>{rating.score}</b></span>
-    </div>
+    </Info>
 }

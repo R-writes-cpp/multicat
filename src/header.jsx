@@ -24,7 +24,7 @@ function hamburgerMenu() {
             logged_in ? <>
                 <a className="button" href="/users">Profile</a>
                 <a className="button" href="/rankings">Rankings</a>
-                <a className="button" href="/recs">Recommendations</a>
+                <a className="button" href="/recommendations">Recommendations</a>
                 <a className="button" href="/logout">Log out</a>
             </> :
             <>

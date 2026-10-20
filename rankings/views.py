@@ -5,14 +5,8 @@ from django.db.models import Avg, Q
 from math import log10, sqrt
 from json import loads
 
-from utils import priority_queue, get_top_n
-
-# Create your views here.
-def ranking_weight(r):
-    release_ratings = Rating.objects.filter(release__id = r.id)
-    avg_rating = release_ratings.aggregate(Avg('score', default=0))['score__avg']
-
-    return avg_rating * sqrt(log10(release_ratings.count() + 1))
+from utils import priority_queue
+from appmodels.models import get_ranking_weight
 
 def index(request):
     filtered_releases = Release.objects.all()
@@ -34,12 +28,12 @@ def index(request):
 
     pq_ranking = priority_queue (
         list(filtered_releases),
-        cmp=lambda parent, child : ranking_weight(parent) > ranking_weight(child)
+        weight=lambda r : get_ranking_weight(r)
     )
 
-    top_5 = get_top_n(5, pq_ranking)
+    top_5 = pq_ranking.get_top_n(5)
 
     return render (request, 'rankings/index.html', {
         'top_5_data': ReleaseSerializer(top_5, many=True).data,
-        'logged_in': 'user_id' in request.session
+        'logged_in': True
     })
